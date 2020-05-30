@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/all.min.css">
+    <title>Pathfinding Visualization</title>
+</head>
+<body>
+    <div id =  heading>
+        <h2>Pathfinding Visualization</h2>
+    </div>
+    <div id="content">
+        <div id="visualization">
+            <canvas id="canvas"></canvas>
+            <div id="control">
+                <button id="start" class="control-btn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button id="stop" class="control-btn">
+                    <i class="fas fa-stop"></i>
+                </button>
+                <button id="reload" class="control-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div id="Information">
+            <div id="path">
+                <h2>Path:</h2>
+                <h3>Length:</h3>
+                <h3>Time:</h3>
+                <h3>Operations:</h3>
+            </div>
+            <div id="options">
+                <h2>Options:</h2>
+                <div id="algorithm-container" class="drop-down-box">
+                    <label for="algorithm">Choose an algorithm:</label><br>
+                    <select name="algorithm" id="algorithm">
+                        <option value="A*">A*</option>
+                        <option value="IDA*">IDA*</option>
+                        <option value="Djkstra">Djkstra</option>
+                      </select>
+                </div>
+                <div id="heuristic-container" class="drop-down-box">
+                    <label for="heuristic">Choose a heuristic:</label><br>
+                    <select name="heuristic" id="heuristic">
+                        <option value="A*">Manhattan-Distance</option>
+                        <option value="IDA*">Euclidian-Distance</option>
+                      </select>
+                </div>
+                <div id="weight-container" class="checkbox">
+                    <input type="checkbox" id="weight" name="weight" value="weight">
+                    <label for="weight"> With weights</label><br>
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+<script src="../js/script.js"></script>
+</body>
+</html>

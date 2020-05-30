@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+}
+
+button {
+
+}
+
+#heading {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#content {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+#visualization {
+    width: 500px;
+}
+
+#control{
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-around;
+}
+
+#information {
+    display: flex;
+    flex-direction: row;
+}
+
+#options {
+    margin-top: 50px;
+}
+
+.drop-down-box {
+    margin-top: 10px;
+}
+
+.checkbox {
+    margin-top: 10px;
+}
+
