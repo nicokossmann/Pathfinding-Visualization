@@ -530,17 +530,30 @@ const Graphics = {
     onMouseUp: function() {
         var posX = 0;
         var posY = 0;
-        if(Graphics.clicked == 'Start') {
-            posX = Graphics.StartPos.x;
-            posY = Graphics.StartPos.y;
-            console.log(posX, posY);
-            grid[posX][posY] = new Tile(posX, posY);
-            Graphics.drawWhite(posX, posY);
-            posX = Graphics.focusField.x;
-            posY = Graphics.focusField.y
-            astar.setStart(posX, posY);
-            Graphics.StartPos = {x: posX, y: posY};
-            Graphics.clicked = 'None';
+        switch (Graphics.clicked) {
+            case 'Start':
+                posX = Graphics.StartPos.x;
+                posY = Graphics.StartPos.y;
+                grid[posX][posY] = new Tile(posX, posY);
+                Graphics.drawWhite(posX, posY);
+                posX = Graphics.focusField.x;
+                posY = Graphics.focusField.y
+                astar.setStart(posX, posY);
+                Graphics.StartPos = {x: posX, y: posY};
+                Graphics.clicked = 'None';
+                break;
+            case 'Finish':
+                posX = Graphics.FinishPos.x;
+                posY = Graphics.FinishPos.y;
+                grid[posX][posY] = new Tile(posX, posY);
+                Graphics.drawWhite(posX, posY);
+                posX = Graphics.focusField.x;
+                posY = Graphics.focusField.y
+                astar.setFinish(posX, posY);
+                Graphics.FinishPos = {x: posX, y: posY};
+                Graphics.clicked = 'None';
+            default:
+                break;
         }
         Graphics.renderCanvas();
     },
