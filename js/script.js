@@ -311,7 +311,7 @@ const Graphics = {
 
     drawWhite: function(px, py) {
         console.log(px, py);
-        context.filstyle = 'orange';
+        context.fillStyle = 'white';
         context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2)
     },
 
