@@ -300,7 +300,7 @@ const Graphics = {
             context.strokeStyle = 'red';
         }
         else{
-            context.strokeStyle = 'black';
+            context.strokeStyle = 'rgb(56, 56, 56)';
         }
         context.strokeRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-1, Graphics.fieldSize-1);
         
@@ -413,8 +413,8 @@ const Graphics = {
         gridSize = 12;
         Graphics.initGrid();
         astar = new AStar();
-        Graphics.renderCanvas();
-        //Graphics.onResize();
+        
+        Graphics.resizeCanvas();
     },
 
     renderCanvas: function(){
@@ -429,14 +429,8 @@ const Graphics = {
         }
     },
 
-    /*onResize: function() {
-        canvas.height = window.innerHeight;
-        canvas.width =  window.innerWidth;
-        Graphics.renderCanvas();
-    },*/
-
     resizeCanvas: function() {
-        if(window.innerWidth <= 1000) {
+        if(window.innerWidth <= 750) {
             canvas.height = "300";
             canvas.width = "300";
         }
@@ -444,6 +438,7 @@ const Graphics = {
             canvas.height = "500";
             canvas.width = "500";
         }
+        Graphics.renderCanvas();
     },
 
     onMouseMove: function(event) {
@@ -498,6 +493,7 @@ const Graphics = {
 //Eventlistener
 window.addEventListener('load', () => {
     Graphics.initCanvas();
+    window.addEventListener('resize', Graphics.resizeCanvas)
     document.addEventListener('keydown', Graphics.onKeyDown);
     canvas.addEventListener('mousemove', Graphics.onMouseMove);
     canvas.addEventListener('click', Graphics.onMouseClick);

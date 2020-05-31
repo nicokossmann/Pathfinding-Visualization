@@ -2,23 +2,22 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: monospace;
 }
 
 body {
     overflow: hidden;
 }
 
-button {
-
-}
 
 #heading {
     margin-top: 20px;
     text-align: center;
+    font-size: 1.5rem;
 }
 
 #content {
-    margin-top: 50px;
+    margin-top: 30px;
     margin-bottom: 50px;
     width: 100%;
     height: 100%;
@@ -30,8 +29,30 @@ button {
     width: 500px;
 }
 
+button {
+    width: 2rem;
+    height: 2rem;
+    background-color: transparent;
+    border: solid rgb(56, 56, 56) 2px;
+    border-radius: 3px;
+}
+
+#start {
+    color: rgb(12, 189, 12);
+}
+
+#stop {
+    color: red;
+}
+
+#reload {
+    color: blue;
+}
+
+
+
 #control{
-    margin-top: 30px;
+    margin-top: 20px;
     display: flex;
     justify-content: space-around;
 }
@@ -51,5 +72,47 @@ button {
 
 .checkbox {
     margin-top: 10px;
+}
+
+@media (max-width: 750px){
+    body {
+        overflow: auto;
+        text-align: center;
+    }
+
+    #content {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        flex-direction: column;
+    }
+
+    #visualization {
+        width: 300px;
+        margin: 0 auto 0 auto;
+    }
+
+    #control {
+        width: 300px;
+        display: flex;
+        justify-content: space-around;
+        margin: 20px auto 0 auto;
+    }
+
+    button {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    i {
+        font-size: 1rem;
+    }
+
+    #path {
+        margin-top: 30px;
+    }
+
+    #options {
+        margin-top: 30px;
+    }
 }
 
