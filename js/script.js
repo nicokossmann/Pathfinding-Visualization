@@ -96,6 +96,8 @@ class Pathfindinding {
         this.currentNode = null;
         this.lineCoast = 10;
         this.diagonalCoast = 14;
+        this.found = false;
+        this.modus = 'None';
     }
 
     setBorder(px, py) {
@@ -117,6 +119,7 @@ class Pathfindinding {
             this.path.push(node.parent);
             node = node.parent;   
         }
+        Graphics.setLength(this.path);
         return this.path;
     }
 
@@ -167,14 +170,14 @@ class AStar extends Pathfindinding{
     }
 
     //A* Pathfinding Algorithm
-    findPath() {
+    findPath() {        
         this.start = grid[Graphics.StartPos.x][Graphics.StartPos.y];
         this.finish = grid[Graphics.FinishPos.x][Graphics.FinishPos.y];
         Graphics.initNodes();
 
         this.openList.push(this.start);
 
-        this.intervall =setInterval(() => {
+        this.intervall = setInterval(() => {
             this.nextStep();
         }, 500);
     }
@@ -192,6 +195,7 @@ class AStar extends Pathfindinding{
             if(this.currentNode == this.finish){
                 Graphics.drawPath();
                 console.log('Finish');
+                this.found = true;
                 clearInterval(this.intervall);
                 return;
             }
@@ -238,7 +242,9 @@ const Graphics = {
 
     focusField: {x:0, y:0},
 
-    modus: 'None',
+    //modus: 'None',
+
+    clicked: 'None',
 
     StartPos: {x:0, y:0},
 
@@ -261,6 +267,15 @@ const Graphics = {
         else {
             return false;
         }  
+    },
+
+    setLength: function(parr) {
+        var length = document.getElementById("length");
+        length.innerHTML = "<h2>Length:"+ parr.length + "</h2>"; 
+    },
+
+    setTime: function(ptime) {
+        var time = document.getElementById("time");
     },
 
     //unsicher ob man die neighbours direkt initalisieren kann
@@ -294,6 +309,11 @@ const Graphics = {
         }
     },
 
+    drawWhite: function(px, py) {
+        console.log(px, py);
+        context.filstyle = 'orange';
+        context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2)
+    },
 
     drawFocusField: function(px, py) {
         if (px == Graphics.focusField.x && py == Graphics.focusField.y) {
@@ -314,23 +334,19 @@ const Graphics = {
     },
 
     drawStart: function(px, py) {
-        if(px == Graphics.focusField.x && py == Graphics.focusField.y) {
-            context.fillStyle = 'rgb(67,110,238';
-            context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
-            context.fillStyle = 'black';
-            context.font = Graphics.fieldSize*0.8 + 'px monospace';
-            context.fillText("S", px*Graphics.fieldSize+ Graphics.fieldSize*0.3, py*Graphics.fieldSize+ Graphics.fieldSize*0.7);
-        }
+        context.fillStyle = 'rgb(67,110,238';
+        context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
+        context.fillStyle = 'black';
+        context.font = Graphics.fieldSize*0.8 + 'px monospace';
+        context.fillText("S", px*Graphics.fieldSize+ Graphics.fieldSize*0.3, py*Graphics.fieldSize+ Graphics.fieldSize*0.7);
     },
 
     drawFinish: function(px, py) {
-        if(px == Graphics.focusField.x && py == Graphics.focusField.y) {
-            context.fillStyle = 'rgb(67,110,238';
-            context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
-            context.fillStyle = 'black';
-            context.font = Graphics.fieldSize*0.8 + 'px monospace';
-            context.fillText("F", px*Graphics.fieldSize+ Graphics.fieldSize*0.3, py*Graphics.fieldSize+ Graphics.fieldSize*0.7);
-        }
+        context.fillStyle = 'rgb(67,110,238';
+        context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
+        context.fillStyle = 'black';
+        context.font = Graphics.fieldSize*0.8 + 'px monospace';
+        context.fillText("F", px*Graphics.fieldSize+ Graphics.fieldSize*0.3, py*Graphics.fieldSize+ Graphics.fieldSize*0.7);
     },
 
     drawOpenList: function() {
@@ -400,7 +416,7 @@ const Graphics = {
                         break;
                     case 'Node':
                         Graphics.drawNode(x, y);
-                        break
+                        break;
                 }
             }
         }
@@ -409,11 +425,13 @@ const Graphics = {
     initCanvas: function() {
         canvas = document.getElementById("canvas");
         context = canvas.getContext("2d");
-        Graphics.resizeCanvas();
         gridSize = 12;
         Graphics.initGrid();
         astar = new AStar();
-        
+        Graphics.StartPos = {x: 3, y: 5};
+        astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
+        Graphics.FinishPos = {x: 8, y: 5};
+        astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
         Graphics.resizeCanvas();
     },
 
@@ -449,7 +467,7 @@ const Graphics = {
         Graphics.renderCanvas();
     },
 
-    onKeyDown: function(event) {
+    /*onKeyDown: function(event) {
         switch(event.keyCode) {
             //Keycode for 'b'
             case 66:
@@ -468,9 +486,9 @@ const Graphics = {
                 astar.findPath();
                 break;
         }
-    },
+    },*/
 
-    onMouseClick: function(event) {
+    /*onMouseClick: function(event) {
         switch(Graphics.modus) {
             case 'Border':
                 astar.setBorder(Graphics.focusField.x, Graphics.focusField.y);
@@ -480,21 +498,94 @@ const Graphics = {
                 Graphics.StartPos = {x: Graphics.focusField.x, y: Graphics.focusField.y};
                 break;
             case 'Finish':
-                astar
-                .setFinish(Graphics.focusField.x, Graphics.focusField.y);
+                astar.setFinish(Graphics.focusField.x, Graphics.focusField.y);
                 Graphics.FinishPos = {x: Graphics.focusField.x, y: Graphics.focusField.y};
                 break;
         }
         Graphics.modus = 'None';
         Graphics.renderCanvas();
+    }*/
+
+    onMouseClick: function(event) {
+    var posX = Graphics.focusField.x;
+    var posY = Graphics.focusField.y;
+    if(grid[posX][posY].getTileType() === 'Default') { 
+        astar.setBorder(posX, posY);
     }
+    Graphics.renderCanvas();
+    },
+
+    onMouseDown: function() {
+        var posX = Graphics.focusField.x;
+        var posY = Graphics.focusField.y;
+        if(grid[posX][posY].getTileType() == 'Start') {
+            Graphics.clicked = 'Start';
+        }
+        if(grid[posX][posY].getTileType() == 'Finish'){
+            Graphics.clicked = 'Finish';
+        }
+        Graphics.renderCanvas();
+    },
+
+    onMouseUp: function() {
+        var posX = 0;
+        var posY = 0;
+        if(Graphics.clicked == 'Start') {
+            posX = Graphics.StartPos.x;
+            posY = Graphics.StartPos.y;
+            console.log(posX, posY);
+            grid[posX][posY] = new Tile(posX, posY);
+            Graphics.drawWhite(posX, posY);
+            posX = Graphics.focusField.x;
+            posY = Graphics.focusField.y
+            astar.setStart(posX, posY);
+            Graphics.StartPos = {x: posX, y: posY};
+            Graphics.clicked = 'None';
+        }
+        Graphics.renderCanvas();
+    },
+
+    onStart: function() {
+        if(!astar.found && astar.modus == 'None') {
+            astar.findPath();
+        }
+        if(!astar.found && astar.modus == 'Stop') {
+            astar.intervall = setInterval(() => {
+                astar.nextStep();
+            }, 500);
+        }
+    },
+
+    onStop: function() {
+        if(!this.found){
+            clearInterval(astar.intervall);
+        }
+    },
+
+    onReload: function() {
+
+    }
+
+    
 };
 
 //Eventlistener
 window.addEventListener('load', () => {
     Graphics.initCanvas();
+
+    var start = document.getElementById("start");
+    var stop = document.getElementById("stop");
+    var reload = document.getElementById("reload");
+
     window.addEventListener('resize', Graphics.resizeCanvas)
-    document.addEventListener('keydown', Graphics.onKeyDown);
+    //document.addEventListener('keydown', Graphics.onKeyDown);
+
     canvas.addEventListener('mousemove', Graphics.onMouseMove);
     canvas.addEventListener('click', Graphics.onMouseClick);
+    canvas.addEventListener('mousedown', Graphics.onMouseDown)
+    canvas.addEventListener('mouseup', Graphics.onMouseUp);
+
+    start.addEventListener('click', Graphics.onStart);
+    stop.addEventListener('click', Graphics.onStop);
+    reload.addEventListener('click', Graphics.onReload);
 });

@@ -9,11 +9,11 @@ body {
     overflow: hidden;
 }
 
-
 #heading {
     margin-top: 20px;
     text-align: center;
     font-size: 1.5rem;
+    color: rgb(56, 56, 56);
 }
 
 #content {
@@ -49,8 +49,6 @@ button {
     color: blue;
 }
 
-
-
 #control{
     margin-top: 20px;
     display: flex;
@@ -80,6 +78,10 @@ button {
         text-align: center;
     }
 
+    #heading {
+        margin-top: 10px;
+    }
+
     #content {
         margin-top: 20px;
         margin-bottom: 20px;
@@ -104,7 +106,7 @@ button {
     }
 
     i {
-        font-size: 1rem;
+        font-size: 0.75rem;
     }
 
     #path {
