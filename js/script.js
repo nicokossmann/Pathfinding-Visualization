@@ -229,10 +229,10 @@ class AStar extends Pathfindinding{
                 continue;
             }
             else {
-               var nextMoveCoast  = this.currentNode.gScore + this.getEuclideanDistance(neighbour);
+               var nextMoveCoast  = this.currentNode.gScore + Graphics.getHeuristic(astar, neighbour);
                 if(nextMoveCoast < neighbour.gScore || !this.openList.includes(neighbour)) {
                     neighbour.gScore = nextMoveCoast;
-                    neighbour.hScore = this.getEuclideanDistance(neighbour);
+                    neighbour.hScore = Graphics.getHeuristic(astar, neighbour);
                     neighbour.parent = this.currentNode;
 
                     if(!this.openList.includes(neighbour)){
@@ -290,9 +290,41 @@ const Graphics = {
         time.innerHTML = "<h3>Time:" + ptime + "ms</h3>"
     },
 
-    setIterations: function(count){
+    setIterations: function(count) {
         var iterations = document.getElementById("iterations");
         iterations.innerHTML = "<h3>Iterations:" + count +"</h3>";
+    },
+
+    getAlgorithm: function() {
+        var dropbox = document.getElementById("algorithm");
+        var algo = dropbox.options[dropbox.selectedIndex].value;
+        switch (algo) {
+            case 'A*':
+                astar = new AStar();
+                astar.iterations = 1
+                astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
+                astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
+                break;
+            case 'IDA*':
+                break;
+            case 'Djkstra':
+                break; 
+        }
+    },
+
+    getHeuristic: function(algo, node) {
+        var dropbox = document.getElementById("heuristic");
+        var heuristic = dropbox.options[dropbox.selectedIndex].value;
+        var cost = 0;
+        switch (heuristic) {
+            case 'Manhattan-Distance':
+                cost = algo.getManhattanDistance(node);
+                break;
+            case 'Euclidian-Distance':
+                cost = algo.getEuclideanDistance(node);
+                break;
+        }
+        return cost;
     },
 
     //unsicher ob man die neighbours direkt initalisieren kann
@@ -443,10 +475,7 @@ const Graphics = {
         context = canvas.getContext("2d");
         gridSize = 12;
         Graphics.initGrid();
-        astar = new AStar();
-        astar.iterations = 1
-        astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
-        astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
+        Graphics.getAlgorithm();
         Graphics.resizeCanvas();
     },
 
