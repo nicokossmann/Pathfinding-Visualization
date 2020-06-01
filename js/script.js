@@ -425,9 +425,7 @@ const Graphics = {
         gridSize = 12;
         Graphics.initGrid();
         astar = new AStar();
-        //Graphics.StartPos = {x: 3, y: 5};
         astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
-        //Graphics.FinishPos = {x: 8, y: 5};
         astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
         Graphics.resizeCanvas();
     },
