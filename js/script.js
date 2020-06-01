@@ -376,7 +376,7 @@ const Graphics = {
                 context.fillStyle = 'rgb(0,255,127)';
                 context.fillRect(node.x*Graphics.fieldSize, node.y*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
                 context.fillStyle = 'black';
-                context.font = Graphics.fieldSize*0.5 + 'px monospace';
+                context.font = Graphics.fieldSize*0.4 + 'px monospace';
                 context.fillText(Math.ceil(node.getFScore()), node.x*Graphics.fieldSize+ Graphics.fieldSize*0.3, node.y*Graphics.fieldSize+ Graphics.fieldSize*0.7);
             } 
         }
@@ -393,7 +393,7 @@ const Graphics = {
                 context.fillStyle = 'rgb(255,99,71)';
                 context.fillRect(node.x*Graphics.fieldSize, node.y*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
                 context.fillStyle = 'black';
-                context.font = Graphics.fieldSize*0.5 + 'px monospace';
+                context.font = Graphics.fieldSize*0.4 + 'px monospace';
                 context.fillText(Math.ceil(node.getFScore()), node.x*Graphics.fieldSize+ Graphics.fieldSize*0.3, node.y*Graphics.fieldSize+ Graphics.fieldSize*0.7);
             } 
         }
@@ -410,7 +410,7 @@ const Graphics = {
                 context.fillStyle = 'rgb(152,245,255)';
                 context.fillRect(node.x*Graphics.fieldSize, node.y*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
                 context.fillStyle = 'black';
-                context.font = Graphics.fieldSize*0.5 + 'px monospace';
+                context.font = Graphics.fieldSize*0.4 + 'px monospace';
                 context.fillText(Math.ceil(node.getFScore()), node.x*Graphics.fieldSize+ Graphics.fieldSize*0.3, node.y*Graphics.fieldSize+ Graphics.fieldSize*0.7);
             } 
         }
@@ -560,21 +560,19 @@ const Graphics = {
     },
 
     onReload: function() {
-        if(astar.found){
-            for(let x = 0; x < gridSize; x++) {
-                for(let y = 0; y < gridSize; y++) {
-                    if(grid[x][y].getTileType() == 'Start' || grid[x][y].getTileType() == 'Finish') {
-                        continue;
-                    }
-                    else {
-                        grid[x][y] = new Tile(x, y);
-                        Graphics.drawWhite(x, y);
-                    }
-                }
+    for(let x = 0; x < gridSize; x++) {
+        for(let y = 0; y < gridSize; y++) {
+            if(grid[x][y].getTileType() == 'Start' || grid[x][y].getTileType() == 'Finish') {
+                continue;
             }
-            astar.found = false;
-            Graphics.initCanvas();
+            else {
+                grid[x][y] = new Tile(x, y);
+                Graphics.drawWhite(x, y);
+            }
         }
+    }
+    astar.found = false;
+    Graphics.initCanvas();
     },
 };
 
