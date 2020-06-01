@@ -242,13 +242,11 @@ const Graphics = {
 
     focusField: {x:0, y:0},
 
-    //modus: 'None',
-
     clicked: 'None',
 
-    StartPos: {x:0, y:0},
+    StartPos: {x: 3, y: 5},
 
-    FinishPos: {x:0, y:0},
+    FinishPos: {x: 8, y: 5},
 
     //Calculate the Size of Tile
     calcFieldSize: function() {
@@ -310,7 +308,6 @@ const Graphics = {
     },
 
     drawWhite: function(px, py) {
-        console.log(px, py);
         context.fillStyle = 'white';
         context.fillRect(px*Graphics.fieldSize, py*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2)
     },
@@ -428,9 +425,9 @@ const Graphics = {
         gridSize = 12;
         Graphics.initGrid();
         astar = new AStar();
-        Graphics.StartPos = {x: 3, y: 5};
+        //Graphics.StartPos = {x: 3, y: 5};
         astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
-        Graphics.FinishPos = {x: 8, y: 5};
+        //Graphics.FinishPos = {x: 8, y: 5};
         astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
         Graphics.resizeCanvas();
     },
@@ -467,50 +464,17 @@ const Graphics = {
         Graphics.renderCanvas();
     },
 
-    /*onKeyDown: function(event) {
-        switch(event.keyCode) {
-            //Keycode for 'b'
-            case 66:
-                Graphics.modus = 'Border';
-                break;
-            //Keycode for 's'
-            case 83:
-                Graphics.modus = 'Start';
-                break;
-            //Keycode for 'f'
-            case 70:
-                Graphics.modus = 'Finish';
-                break;
-            //Keycode for 'Enter'
-            case 13:
-                astar.findPath();
-                break;
-        }
-    },*/
-
-    /*onMouseClick: function(event) {
-        switch(Graphics.modus) {
-            case 'Border':
-                astar.setBorder(Graphics.focusField.x, Graphics.focusField.y);
-                break;
-            case 'Start':
-                astar.setStart(Graphics.focusField.x, Graphics.focusField.y);
-                Graphics.StartPos = {x: Graphics.focusField.x, y: Graphics.focusField.y};
-                break;
-            case 'Finish':
-                astar.setFinish(Graphics.focusField.x, Graphics.focusField.y);
-                Graphics.FinishPos = {x: Graphics.focusField.x, y: Graphics.focusField.y};
-                break;
-        }
-        Graphics.modus = 'None';
-        Graphics.renderCanvas();
-    }*/
-
     onMouseClick: function(event) {
     var posX = Graphics.focusField.x;
     var posY = Graphics.focusField.y;
-    if(grid[posX][posY].getTileType() === 'Default') { 
-        astar.setBorder(posX, posY);
+    switch (grid[posX][posY].getTileType()) {
+        case 'Default':
+            astar.setBorder(posX, posY);
+            break;
+        case 'Border':
+            grid[posX][posY] = new Tile(posX, posY);
+            Graphics.drawWhite(posX, posY);
+            break;
     }
     Graphics.renderCanvas();
     },
@@ -518,11 +482,13 @@ const Graphics = {
     onMouseDown: function() {
         var posX = Graphics.focusField.x;
         var posY = Graphics.focusField.y;
-        if(grid[posX][posY].getTileType() == 'Start') {
-            Graphics.clicked = 'Start';
-        }
-        if(grid[posX][posY].getTileType() == 'Finish'){
-            Graphics.clicked = 'Finish';
+        switch (grid[posX][posY].getTileType()) {
+            case 'Start':
+                Graphics.clicked = 'Start';
+                break;
+            case 'Finish':
+                Graphics.clicked = 'Finish';
+                break;
         }
         Graphics.renderCanvas();
     },
@@ -570,13 +536,27 @@ const Graphics = {
     },
 
     onStop: function() {
-        if(!this.found){
+        if(!astar.found){
             clearInterval(astar.intervall);
         }
     },
 
     onReload: function() {
-
+        if(astar.found){
+            for(let x = 0; x < gridSize; x++) {
+                for(let y = 0; y < gridSize; y++) {
+                    if(grid[x][y].getTileType() == 'Start' || grid[x][y].getTileType() == 'Finish') {
+                        continue;
+                    }
+                    else {
+                        grid[x][y] = new Tile(x, y);
+                        Graphics.drawWhite(x, y);
+                    }
+                }
+            }
+            astar.found = false;
+            Graphics.initCanvas();
+        }
     }
 
     
