@@ -94,10 +94,10 @@ class Pathfindinding {
         this.start = null;
         this.finish = null;
         this.currentNode = null;
-        this.lineCoast = 10;
-        this.diagonalCoast = 14;
         this.found = false;
         this.modus = 'None';
+        this.startTime = 0
+        this.iterations = 0;
     }
 
     setBorder(px, py) {
@@ -142,6 +142,10 @@ class Pathfindinding {
         return distance;
     }
 
+    getTime(){
+        return new Date() - this.startTime;
+    }
+
     removeFromList(arr, elem) {
         for (let i = arr.length; i >= 0; i--) {
             if(arr[i] == elem) {
@@ -175,6 +179,8 @@ class AStar extends Pathfindinding{
         this.finish = grid[Graphics.FinishPos.x][Graphics.FinishPos.y];
         Graphics.initNodes();
 
+        this.startTime = new Date();
+
         this.openList.push(this.start);
 
         this.intervall = setInterval(() => {
@@ -193,15 +199,20 @@ class AStar extends Pathfindinding{
             Graphics.drawClosedList();
 
             if(this.currentNode == this.finish){
+                var time = astar.getTime();
+                console.log(time);
                 Graphics.drawPath();
-                console.log('Finish');
+                Graphics.setIterations(this.iterations);
+                Graphics.setTime(time);
                 this.found = true;
+                console.log('Finish');
                 clearInterval(this.intervall);
                 return;
             }
 
             var neighbours = this.currentNode.getNeighbours();
             this.checkNeighbours(neighbours);
+            this.iterations += 1;
         }
         else{
             console.log('No Solution!');
@@ -269,11 +280,19 @@ const Graphics = {
 
     setLength: function(parr) {
         var length = document.getElementById("length");
-        length.innerHTML = "<h2>Length:"+ parr.length + "</h2>"; 
+        length.innerHTML = "<h3>Length:"+ parr.length + "</h3>"; 
     },
 
     setTime: function(ptime) {
         var time = document.getElementById("time");
+        console.log(200*astar.iterations);
+        ptime = ptime - (200*astar.iterations);
+        time.innerHTML = "<h3>Time:" + ptime + "ms</h3>"
+    },
+
+    setIterations: function(count){
+        var iterations = document.getElementById("iterations");
+        iterations.innerHTML = "<h3>Iterations:" + count +"</h3>";
     },
 
     //unsicher ob man die neighbours direkt initalisieren kann
@@ -425,6 +444,7 @@ const Graphics = {
         gridSize = 12;
         Graphics.initGrid();
         astar = new AStar();
+        astar.iterations = 1
         astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
         astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
         Graphics.resizeCanvas();
@@ -555,9 +575,7 @@ const Graphics = {
             astar.found = false;
             Graphics.initCanvas();
         }
-    }
-
-    
+    },
 };
 
 //Eventlistener
@@ -569,7 +587,6 @@ window.addEventListener('load', () => {
     var reload = document.getElementById("reload");
 
     window.addEventListener('resize', Graphics.resizeCanvas)
-    //document.addEventListener('keydown', Graphics.onKeyDown);
 
     canvas.addEventListener('mousemove', Graphics.onMouseMove);
     canvas.addEventListener('click', Graphics.onMouseClick);
