@@ -1,5 +1,5 @@
 //Global variables
-var canvas, context, pathfinding, astar;
+var canvas, context, pathfinding, astar, dijkstra;
 var grid = [];
 var gridSize;
 
@@ -94,6 +94,7 @@ class Pathfindinding {
         this.start = null;
         this.finish = null;
         this.currentNode = null;
+        this.intervall = null;
         this.found = false;
         this.modus = 'None';
         this.startTime = 0
@@ -161,7 +162,6 @@ class AStar extends Pathfindinding{
         super();
         this.openList = [];
         this.closedList = [];
-        this.intervall = null;
     }
 
     sortOpenlist() {
@@ -245,6 +245,33 @@ class AStar extends Pathfindinding{
     }
 };
 
+class Dijkstra extends Pathfindinding {
+
+    constructor() {
+        super();
+        this.visitedNodes = [];
+    }
+
+    findPath() {
+        this.start = grid[Graphics.StartPos.x][Graphics.StartPos.y];
+        this.finish = grid[Graphics.FinishPos.x][Graphics.FinishPos.y];
+        Graphics.initNodes();
+
+        this.startTime = new Date();
+
+        this.start.gScore = 0;
+        
+        this.intervall = setInterval(() => {
+            this.nextStep();
+        }, 500);
+    }
+
+    nextStep() {
+        if(this.visitedNodes.length) {
+
+        }
+    }
+}
 
 //Visulize the Grid
 const Graphics = {
@@ -286,7 +313,7 @@ const Graphics = {
     setTime: function(ptime) {
         var time = document.getElementById("time");
         console.log(200*astar.iterations);
-        ptime = ptime - (200*astar.iterations);
+        ptime = ptime - (500*astar.iterations);
         time.innerHTML = "<h3>Time:" + ptime + "ms</h3>"
     },
 
@@ -307,7 +334,7 @@ const Graphics = {
                 break;
             case 'IDA*':
                 break;
-            case 'Djkstra':
+            case 'Dijkstra':
                 break; 
         }
     },
@@ -512,18 +539,18 @@ const Graphics = {
     },
 
     onMouseClick: function(event) {
-    var posX = Graphics.focusField.x;
-    var posY = Graphics.focusField.y;
-    switch (grid[posX][posY].getTileType()) {
-        case 'Default':
-            astar.setBorder(posX, posY);
-            break;
-        case 'Border':
-            grid[posX][posY] = new Tile(posX, posY);
-            Graphics.drawWhite(posX, posY);
-            break;
-    }
-    Graphics.renderCanvas();
+        var posX = Graphics.focusField.x;
+        var posY = Graphics.focusField.y;
+        switch (grid[posX][posY].getTileType()) {
+            case 'Default':
+                astar.setBorder(posX, posY);
+                break;
+            case 'Border':
+                grid[posX][posY] = new Tile(posX, posY);
+                Graphics.drawWhite(posX, posY);
+                break;
+        }
+        Graphics.renderCanvas();
     },
 
     onMouseDown: function() {
@@ -582,7 +609,7 @@ const Graphics = {
         }
     },
 
-    onStop: function() {
+    onStop: function(algo) {
         if(!astar.found){
             clearInterval(astar.intervall);
         }
