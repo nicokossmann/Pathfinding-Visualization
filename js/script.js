@@ -1,5 +1,5 @@
 //Global variables
-var canvas, context, pathfinding, astar, dijkstra;
+var canvas, context, algorithm;
 var grid = [];
 var gridSize;
 
@@ -35,6 +35,7 @@ class Node extends Tile {
         this.gScore = 0;
         this.hScore = 0;
         this.neighbours = [];
+        this.isVisited = false;
     }
 
     //Returns the G-Score of the Node
@@ -125,21 +126,18 @@ class Pathfindinding {
     }
 
     //Heuristic for GScore
-    getEuclideanDistance(node) {
-        let distX = node.x - this.finish.x;
-        let distY = node.y - this.finish.y;
-        console.log(node);
-        var distance = Math.sqrt(distX*distX + distY*distY);
-        console.log('Euclidean Distance', distance);
+    getManhattanDistance(node) {
+        let distX = Math.abs(node.x - this.finish.x);
+        let distY = Math.abs(node.y - this.finish.y);
+        var distance = distX + distY;
         return distance;
     }
 
     //Heuristic for GScore
-    getManhattanDistance(node) {
+    getEuclideanDistance(node) {
         let distX = Math.abs(node.x - this.finish.x);
         let distY = Math.abs(node.y - this.finish.y);
-        var distance = distX + distY - 1;
-        console.log('Manhattan Distance', distance);
+        var distance = Math.sqrt(distX*distX + distY*distY);
         return distance;
     }
 
@@ -193,14 +191,13 @@ class AStar extends Pathfindinding{
         if(this.openList.length > 0) {
             this.sortOpenlist();
 
-            astar.removeFromList(this.openList, this.currentNode);
+            this.removeFromList(this.openList, this.currentNode);
             Graphics.drawOpenList();
             this.closedList.push(this.currentNode);
             Graphics.drawClosedList();
 
             if(this.currentNode == this.finish){
-                var time = astar.getTime();
-                console.log(time);
+                var time = this.getTime();
                 Graphics.drawPath();
                 Graphics.setIterations(this.iterations);
                 Graphics.setTime(time);
@@ -229,10 +226,10 @@ class AStar extends Pathfindinding{
                 continue;
             }
             else {
-               var nextMoveCoast  = this.currentNode.gScore + Graphics.getHeuristic(astar, neighbour);
+               var nextMoveCoast  = this.currentNode.gScore + Graphics.getHeuristic(neighbour);
                 if(nextMoveCoast < neighbour.gScore || !this.openList.includes(neighbour)) {
                     neighbour.gScore = nextMoveCoast;
-                    neighbour.hScore = Graphics.getHeuristic(astar, neighbour);
+                    neighbour.hScore = Graphics.getHeuristic(neighbour);
                     neighbour.parent = this.currentNode;
 
                     if(!this.openList.includes(neighbour)){
@@ -245,11 +242,41 @@ class AStar extends Pathfindinding{
     }
 };
 
+class IDAStar extends Pathfindinding {
+
+    constructor() {
+        super();
+    }
+
+    findPath() {
+
+    }
+};
+
 class Dijkstra extends Pathfindinding {
 
     constructor() {
         super();
-        this.visitedNodes = [];
+        this.nodeList = [];
+    }
+
+    getAllNodes() {
+        var nodes = [];
+        for(let x = 0; x < gridSize; x++) {
+            for(let y = 0; y < gridSize; y++) {
+                nodes.push(grid[x][y]);
+            }
+        }
+        return nodes;
+    }
+
+    sortNodeList() {
+        this.currentNode = this.openList[0]
+        for(let i = 0; i < this.nodeList.length; i++) {
+            if(this.nodeList[i].gScore < this.currentNode.gScore) {
+                this.currentNode = this.nodeList[i];
+            }
+        }
     }
 
     findPath() {
@@ -260,6 +287,7 @@ class Dijkstra extends Pathfindinding {
         this.startTime = new Date();
 
         this.start.gScore = 0;
+        this.nodeList = getAllNodes();
         
         this.intervall = setInterval(() => {
             this.nextStep();
@@ -267,11 +295,32 @@ class Dijkstra extends Pathfindinding {
     }
 
     nextStep() {
-        if(this.visitedNodes.length) {
+        if(this.nodeList.length > 0) {
+            this.sortNodeList();
+            var closestNode = this.nodeList.shift();
 
+            if(this.currentNode == this.finish){
+                var time = this.getTime();
+                Graphics.drawPath();
+                Graphics.setIterations(this.iterations);
+                Graphics.setTime(time);
+                this.found = true;
+                console.log('Finish');
+                clearInterval(this.intervall);
+                return;
+            }
+
+            if (closestNode.gScore == Infinity) {
+                return this.nodeList;
+            }
+        }
+        else{
+            console.log('No Solution!');
+            clearInterval(this.intervall);
+            return;
         }
     }
-}
+};
 
 //Visulize the Grid
 const Graphics = {
@@ -296,7 +345,6 @@ const Graphics = {
     },
 
     isStartOrFinish: function(node) {
-        console.log(node);
         if(grid[node.x][node.y].getTileType() == 'Start' || grid[node.x][node.y].getTileType() == 'Finish') {
             return true;
         }
@@ -312,8 +360,7 @@ const Graphics = {
 
     setTime: function(ptime) {
         var time = document.getElementById("time");
-        console.log(200*astar.iterations);
-        ptime = ptime - (500*astar.iterations);
+        ptime = ptime - (500*algorithm.iterations);
         time.innerHTML = "<h3>Time:" + ptime + "ms</h3>"
     },
 
@@ -327,34 +374,36 @@ const Graphics = {
         var algo = dropbox.options[dropbox.selectedIndex].value;
         switch (algo) {
             case 'A*':
-                astar = new AStar();
+                let astar = new AStar();
                 astar.iterations = 1
                 astar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
                 astar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
+                algorithm = astar;
                 break;
             case 'IDA*':
+                let idastar;
+                algorithm = idastar
                 break;
             case 'Dijkstra':
                 break; 
         }
     },
 
-    getHeuristic: function(algo, node) {
+    getHeuristic: function(node) {
         var dropbox = document.getElementById("heuristic");
         var heuristic = dropbox.options[dropbox.selectedIndex].value;
         var cost = 0;
         switch (heuristic) {
             case 'Manhattan-Distance':
-                cost = algo.getManhattanDistance(node);
+                cost = algorithm.getManhattanDistance(node);
                 break;
             case 'Euclidian-Distance':
-                cost = algo.getEuclideanDistance(node);
+                cost = algorithm.getEuclideanDistance(node);
                 break;
         }
         return cost;
     },
 
-    //unsicher ob man die neighbours direkt initalisieren kann
     initNodes: function() {
         for (let x = 0; x < gridSize; x++) {
             for (let y = 0; y < gridSize; y++) {
@@ -425,7 +474,7 @@ const Graphics = {
     },
 
     drawOpenList: function() {
-        var openList = astar.openList;
+        var openList = algorithm.openList;
         for(let i = 0; i < openList.length; i++) {
             var node = openList[i];
             if(Graphics.isStartOrFinish(node)) {
@@ -442,7 +491,7 @@ const Graphics = {
     },
 
     drawClosedList: function() {
-        var closedList = astar.closedList;
+        var closedList = algorithm.closedList;
         for(let i = 0; i < closedList.length; i++) {
             var node = closedList[i];
             if(Graphics.isStartOrFinish(node)) {
@@ -459,7 +508,7 @@ const Graphics = {
     },
 
     drawPath: function() {
-        var path = astar.getPath();
+        var path = algorithm.getPath();
         for(let i = 0; i < path.length; i++) {
             var node = path[i];
             if(Graphics.isStartOrFinish(node)) {
@@ -543,7 +592,7 @@ const Graphics = {
         var posY = Graphics.focusField.y;
         switch (grid[posX][posY].getTileType()) {
             case 'Default':
-                astar.setBorder(posX, posY);
+                algorithm.setBorder(posX, posY);
                 break;
             case 'Border':
                 grid[posX][posY] = new Tile(posX, posY);
@@ -574,44 +623,47 @@ const Graphics = {
             case 'Start':
                 posX = Graphics.StartPos.x;
                 posY = Graphics.StartPos.y;
-                grid[posX][posY] = new Tile(posX, posY);
-                Graphics.drawWhite(posX, posY);
-                posX = Graphics.focusField.x;
-                posY = Graphics.focusField.y
-                astar.setStart(posX, posY);
-                Graphics.StartPos = {x: posX, y: posY};
-                Graphics.clicked = 'None';
+                if(grid[Graphics.focusField.x][Graphics.focusField.y].getTileType() != 'Finish') {
+                    grid[posX][posY] = new Tile(posX, posY);
+                    Graphics.drawWhite(posX, posY);
+                    posX = Graphics.focusField.x;
+                    posY = Graphics.focusField.y;
+                    algorithm.setStart(posX, posY);
+                    Graphics.StartPos = {x: posX, y: posY};
+                    Graphics.clicked = 'None';
+                }
                 break;
             case 'Finish':
                 posX = Graphics.FinishPos.x;
                 posY = Graphics.FinishPos.y;
-                grid[posX][posY] = new Tile(posX, posY);
-                Graphics.drawWhite(posX, posY);
-                posX = Graphics.focusField.x;
-                posY = Graphics.focusField.y
-                astar.setFinish(posX, posY);
-                Graphics.FinishPos = {x: posX, y: posY};
-                Graphics.clicked = 'None';
-            default:
+                if(grid[Graphics.focusField.x][Graphics.focusField.y] .getTileType() != 'Start') {
+                    grid[posX][posY] = new Tile(posX, posY);
+                    Graphics.drawWhite(posX, posY);
+                    posX = Graphics.focusField.x;
+                    posY = Graphics.focusField.y;
+                    algorithm.setFinish(posX, posY);
+                    Graphics.FinishPos = {x: posX, y: posY};
+                    Graphics.clicked = 'None';
+                }
                 break;
         }
         Graphics.renderCanvas();
     },
 
     onStart: function() {
-        if(!astar.found && astar.modus == 'None') {
-            astar.findPath();
+        if(!algorithm.found && algorithm.modus == 'None') {
+            algorithm.findPath();
         }
-        if(!astar.found && astar.modus == 'Stop') {
-            astar.intervall = setInterval(() => {
-                astar.nextStep();
+        if(!algorithm.found && algorithm.modus == 'Stop') {
+            algorithm.intervall = setInterval(() => {
+                algorithm.nextStep();
             }, 500);
         }
     },
 
     onStop: function(algo) {
-        if(!astar.found){
-            clearInterval(astar.intervall);
+        if(!algorithm.found){
+            clearInterval(algorithm.intervall);
         }
     },
 
@@ -627,7 +679,7 @@ const Graphics = {
             }
         }
     }
-    astar.found = false;
+    algorithm.found = false;
     Graphics.initCanvas();
     },
 };
