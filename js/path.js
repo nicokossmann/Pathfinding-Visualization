@@ -167,13 +167,15 @@ class Dijkstra extends Pathfindinding {
 
     constructor() {
         super();
-        this.nodeList = [];
+        this.unvisitedNodes = [];
+        this.visitedNodes = [];
     }
 
     getAllNodes() {
         var nodes = [];
         for(let x = 0; x < gridSize; x++) {
             for(let y = 0; y < gridSize; y++) {
+                grid[x][y].gScore = Infinity;
                 nodes.push(grid[x][y]);
             }
         }
@@ -181,23 +183,38 @@ class Dijkstra extends Pathfindinding {
     }
 
     sortNodeList() {
-        this.currentNode = this.openList[0]
-        for(let i = 0; i < this.nodeList.length; i++) {
-            if(this.nodeList[i].gScore < this.currentNode.gScore) {
-                this.currentNode = this.nodeList[i];
+        this.unvisitedNodes.sort( (nodeA, nodeB) => {
+            return nodeA.gScore - nodeB.gScore;
+        })
+    }
+
+    getUnvisitedNeighbours(node) {
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                if(x == 0 && y == 0) {
+                    continue;
+                }
+
+                var checkX = node.x + x;
+                var checkY = node.y + y;
+
+                if(checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize && !grid[checkX][checkY].isVisited) {
+                    node.neighbours.push(grid[checkX][checkY]);
+                } 
             }
         }
+        return node.neighbours;
     }
 
     findPath() {
         this.start = grid[Graphics.StartPos.x][Graphics.StartPos.y];
         this.finish = grid[Graphics.FinishPos.x][Graphics.FinishPos.y];
         Graphics.initNodes();
+        this.unvisitedNodes = this.getAllNodes();
 
         this.startTime = new Date();
 
-        this.start.gScore = 0;
-        this.nodeList = getAllNodes();
+        this.start.gScore = null;
         
         this.intervall = setInterval(() => {
             this.nextStep();
@@ -205,9 +222,16 @@ class Dijkstra extends Pathfindinding {
     }
 
     nextStep() {
-        if(this.nodeList.length > 0) {
+        if(this.unvisitedNodes.length > 0) {
             this.sortNodeList();
-            var closestNode = this.nodeList.shift();
+            this.currentNode = this.unvisitedNodes.shift();
+
+            if (this.currentNode.gScore === Infinity) {
+                return this.visitedNodes;
+            }
+            this.currentNode.isVisited = true;
+            this.visitedNodes.push(this.currentNode);
+            Graphics.drawNodeList();
 
             if(this.currentNode == this.finish){
                 var time = this.getTime();
@@ -220,14 +244,30 @@ class Dijkstra extends Pathfindinding {
                 return;
             }
 
-            if (closestNode.gScore == Infinity) {
-                return this.nodeList;
-            }
+            var neighbours = this.getUnvisitedNeighbours(this.currentNode);
+            this.checkNeighbours(neighbours, this.currentNode);
+            this.iterations += 1;
         }
         else{
             console.log('No Solution!');
             clearInterval(this.intervall);
             return;
+        }
+    }
+
+    checkNeighbours(neighbours, node) {
+        for(let i = 0; i < neighbours.length; i++) {
+            var neighbour = neighbours[i];
+            if(neighbour.getTileType() == 'Border') {
+                continue;
+            }
+            else {
+                var nextMoveCoast = node.gScore + 1;
+                if(nextMoveCoast < neighbour.gScore){
+                    neighbour.gScore = nextMoveCoast;
+                    neighbour.parent = node;
+                }
+            }
         }
     }
 };

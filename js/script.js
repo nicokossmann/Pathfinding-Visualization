@@ -3,8 +3,6 @@ var canvas, context, algorithm;
 var grid = [];
 var gridSize;
 
-
-
 //Eventlistener
 window.addEventListener('load', () => {
     Graphics.initCanvas();

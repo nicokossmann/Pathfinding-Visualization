@@ -59,9 +59,14 @@ const Graphics = {
                 break;
             case 'IDA*':
                 let idastar;
-                algorithm = idastar
+                algorithm = idastar;
                 break;
             case 'Dijkstra':
+                let dijkstra = new Dijkstra();
+                dijkstra.iterations = 1
+                dijkstra.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
+                dijkstra.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
+                algorithm = dijkstra;
                 break; 
         }
     },
@@ -176,6 +181,23 @@ const Graphics = {
             }
             else {
                 context.fillStyle = 'rgb(255,99,71)';
+                context.fillRect(node.x*Graphics.fieldSize, node.y*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
+                context.fillStyle = 'black';
+                context.font = Graphics.fieldSize*0.4 + 'px monospace';
+                context.fillText(Math.ceil(node.getFScore()), node.x*Graphics.fieldSize+ Graphics.fieldSize*0.3, node.y*Graphics.fieldSize+ Graphics.fieldSize*0.7);
+            } 
+        }
+    },
+
+    drawNodeList: function() {
+        var nodeList = algorithm.visitedNodes;
+        for(let i = 0; i < nodeList.length; i++) {
+            var node = nodeList[i];
+            if(Graphics.isStartOrFinish(node)) {
+                continue;
+            }
+            else {
+                context.fillStyle = 'rgb(224, 102, 255)';
                 context.fillRect(node.x*Graphics.fieldSize, node.y*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
                 context.fillStyle = 'black';
                 context.font = Graphics.fieldSize*0.4 + 'px monospace';
@@ -328,6 +350,7 @@ const Graphics = {
     },
 
     onStart: function() {
+        Graphics.getAlgorithm();
         if(!algorithm.found && algorithm.modus == 'None') {
             algorithm.findPath();
         }
