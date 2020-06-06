@@ -189,7 +189,7 @@ const Graphics = {
         }
     },
 
-    drawNodeList: function() {
+    drawVisitedNodes: function() {
         var nodeList = algorithm.visitedNodes;
         for(let i = 0; i < nodeList.length; i++) {
             var node = nodeList[i];
@@ -218,6 +218,7 @@ const Graphics = {
                 context.fillRect(node.x*Graphics.fieldSize, node.y*Graphics.fieldSize, Graphics.fieldSize-2, Graphics.fieldSize-2);
                 context.fillStyle = 'black';
                 context.font = Graphics.fieldSize*0.4 + 'px monospace';
+                console.log('GScore:', node.gScore + ' HScore:', node.hScore);
                 context.fillText(Math.ceil(node.getFScore()), node.x*Graphics.fieldSize+ Graphics.fieldSize*0.3, node.y*Graphics.fieldSize+ Graphics.fieldSize*0.7);
             } 
         }

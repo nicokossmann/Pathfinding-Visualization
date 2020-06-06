@@ -34,9 +34,9 @@ class Node extends Tile {
         this.isVisited = false;
     }
 
-    //Returns the G-Score of the Node
+    //Returns the F-Score of the Node
     getFScore() {
-        return this.gScore + this.gScore;
+        return this.hScore + this.gScore;
     }
 
     getNeighbours() {

@@ -136,7 +136,8 @@ class AStar extends Pathfindinding{
                 continue;
             }
             else {
-               var nextMoveCoast  = this.currentNode.gScore + Graphics.getHeuristic(neighbour);
+                // ist falsch muss überarbeitet werden
+               var nextMoveCoast  = this.currentNode.gScore + 1;
                 if(nextMoveCoast < neighbour.gScore || !this.openList.includes(neighbour)) {
                     neighbour.gScore = nextMoveCoast;
                     neighbour.hScore = Graphics.getHeuristic(neighbour);
@@ -231,7 +232,7 @@ class Dijkstra extends Pathfindinding {
             }
             this.currentNode.isVisited = true;
             this.visitedNodes.push(this.currentNode);
-            Graphics.drawNodeList();
+            Graphics.drawVisitedNodes();
 
             if(this.currentNode == this.finish){
                 var time = this.getTime();
