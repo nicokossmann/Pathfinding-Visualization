@@ -58,7 +58,10 @@ const Graphics = {
                 algorithm = astar;
                 break;
             case 'IDA*':
-                let idastar;
+                let idastar = new IDAStar();
+                idastar.iterations = 1
+                idastar.setStart(Graphics.StartPos.x, Graphics.StartPos.y);
+                idastar.setFinish(Graphics.FinishPos.x, Graphics.FinishPos.y);
                 algorithm = idastar;
                 break;
             case 'Dijkstra':
@@ -207,7 +210,7 @@ const Graphics = {
     },
 
     drawPath: function() {
-        var path = algorithm.getPath();
+        var path = algorithm.path;
         for(let i = 0; i < path.length; i++) {
             var node = path[i];
             if(Graphics.isStartOrFinish(node)) {

@@ -35,7 +35,12 @@ class Pathfindinding {
         return this.path;
     }
 
-    //Heuristic for GScore
+    //Distance for GScore
+    getDistanceToStart() {
+
+    }
+
+    //Heuristic for HScore
     getManhattanDistance(node) {
         let distX = Math.abs(node.x - this.finish.x);
         let distY = Math.abs(node.y - this.finish.y);
@@ -43,7 +48,7 @@ class Pathfindinding {
         return distance;
     }
 
-    //Heuristic for GScore
+    //Heuristic for HScore
     getEuclideanDistance(node) {
         let distX = Math.abs(node.x - this.finish.x);
         let distY = Math.abs(node.y - this.finish.y);
@@ -108,11 +113,12 @@ class AStar extends Pathfindinding{
 
             if(this.currentNode == this.finish){
                 var time = this.getTime();
+                this.path = this.getPath();
                 Graphics.drawPath();
                 Graphics.setIterations(this.iterations);
                 Graphics.setTime(time);
                 this.found = true;
-                console.log('Finish');
+                console.log('Finish!');
                 clearInterval(this.intervall);
                 return;
             }
@@ -157,11 +163,93 @@ class IDAStar extends Pathfindinding {
 
     constructor() {
         super();
+        this.bound = 0;
+        this.maxBound = 0;
     }
 
     findPath() {
+        this.start = grid[Graphics.StartPos.x][Graphics.StartPos.y];
+        this.finish = grid[Graphics.FinishPos.x][Graphics.FinishPos.y];
+        Graphics.initNodes();
 
+        this.startTime = new Date();
+
+        this.path.push(this.start);
+        this.bound = Graphics.getHeuristic(this.start);
+        console.log(this.bound);
+        console.log('in findPath');
+
+        this.maxBound = this.bound * 10;
+
+        this.intervall = setInterval(() => {
+            this.nextStep();
+        }, 500);
     }
+
+    nextStep() {
+        console.log('in nextStep');
+
+        let temp = this.search(this.path, 0, this.bound);
+        console.log("temp", temp, "max", this.maxBound);
+
+
+        if (temp >= this.maxBound) {
+            clearInterval(this.intervall);
+            console.log("No Solution!");
+            return;
+        }
+
+        if(temp == true) {
+            var time = this.getTime();
+            Graphics.drawPath
+            Graphics.setIterations(this.iterations);
+            Graphics.setTime(time);
+            this.found = true;
+            console.log('Finish!');
+            clearInterval(this.intervall);
+            return;
+        }
+        this.bound = temp
+    }
+
+    search(path, g, bound) {
+        console.log('in search');
+
+        let node = path[this.path.length - 1];
+        node.gScore = g;
+        node.hScore = Graphics.getHeuristic(node);
+
+        this.iterations += 1;
+
+        if(node.getFScore() > bound) {
+            return node.getFScore();
+        }
+
+        if(node == this.finish) {
+            path = this.path;
+            return this.found = true;
+        }
+
+        let min = Infinity;
+
+        var neighbours = node.getNeighbours();
+        neighbours.forEach(neighbour => {
+            if(!path.includes(neighbour)) {
+                path.push(neighbour);
+                //Graphics
+                let temp = this.search(path, g + 1, bound);
+                console.log("temp innen", temp)
+                if (temp == true) {
+                    return this.found;
+                }
+                if (temp < min) {
+                    min = temp;
+                }
+                this.path.pop();
+            }
+        });
+        return min;
+    } 
 };
 
 class Dijkstra extends Pathfindinding {
@@ -236,11 +324,12 @@ class Dijkstra extends Pathfindinding {
 
             if(this.currentNode == this.finish){
                 var time = this.getTime();
+                this.path = this.getPath();
                 Graphics.drawPath();
                 Graphics.setIterations(this.iterations);
                 Graphics.setTime(time);
                 this.found = true;
-                console.log('Finish');
+                console.log('Finish!');
                 clearInterval(this.intervall);
                 return;
             }
