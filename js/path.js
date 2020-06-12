@@ -41,17 +41,17 @@ class Pathfindinding {
     }
 
     //Heuristic for HScore
-    getManhattanDistance(node) {
-        let distX = Math.abs(node.x - this.finish.x);
-        let distY = Math.abs(node.y - this.finish.y);
+    getManhattanDistance(node, endpoint) {
+        let distX = Math.abs(node.x - endpoint.x);
+        let distY = Math.abs(node.y - endpoint.y);
         var distance = distX + distY;
         return distance;
     }
 
     //Heuristic for HScore
-    getEuclideanDistance(node) {
-        let distX = Math.abs(node.x - this.finish.x);
-        let distY = Math.abs(node.y - this.finish.y);
+    getEuclideanDistance(node, endpoint) {
+        let distX = Math.abs(node.x - endpoint.x);
+        let distY = Math.abs(node.y - endpoint.y);
         var distance = Math.sqrt(distX*distX + distY*distY);
         return distance;
     }
@@ -143,10 +143,10 @@ class AStar extends Pathfindinding{
             }
             else {
                 // ist falsch muss überarbeitet werden
-               var nextMoveCoast  = this.currentNode.gScore + 1;
+               var nextMoveCoast  = this.currentNode.gScore + Graphics.getHeuristic(this.currentNode, neighbour);
                 if(nextMoveCoast < neighbour.gScore || !this.openList.includes(neighbour)) {
                     neighbour.gScore = nextMoveCoast;
-                    neighbour.hScore = Graphics.getHeuristic(neighbour);
+                    neighbour.hScore = Graphics.getHeuristic(neighbour, this.finish);
                     neighbour.parent = this.currentNode;
 
                     if(!this.openList.includes(neighbour)){
@@ -175,7 +175,7 @@ class IDAStar extends Pathfindinding {
         this.startTime = new Date();
 
         this.path.push(this.start);
-        this.bound = Graphics.getHeuristic(this.start);
+        this.bound = Graphics.getHeuristic(this.start, this.finish);
         console.log(this.bound);
         console.log('in findPath');
 
@@ -217,7 +217,7 @@ class IDAStar extends Pathfindinding {
 
         let node = path[this.path.length - 1];
         node.gScore = g;
-        node.hScore = Graphics.getHeuristic(node);
+        node.hScore = Graphics.getHeuristic(node, this.finish);
 
         this.iterations += 1;
 

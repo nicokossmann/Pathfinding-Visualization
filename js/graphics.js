@@ -74,16 +74,16 @@ const Graphics = {
         }
     },
 
-    getHeuristic: function(node) {
+    getHeuristic: function(node, endpoint) {
         var dropbox = document.getElementById("heuristic");
         var heuristic = dropbox.options[dropbox.selectedIndex].value;
         var cost = 0;
         switch (heuristic) {
             case 'Manhattan-Distance':
-                cost = algorithm.getManhattanDistance(node);
+                cost = algorithm.getManhattanDistance(node, endpoint);
                 break;
             case 'Euclidian-Distance':
-                cost = algorithm.getEuclideanDistance(node);
+                cost = algorithm.getEuclideanDistance(node, endpoint);
                 break;
         }
         return cost;
