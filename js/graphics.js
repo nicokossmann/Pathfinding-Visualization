@@ -20,7 +20,7 @@ const Graphics = {
             Graphics.fieldSize = canvas.width / gridSize;
         }
     },
-
+    //Check if Start- or Finishpoint
     isStartOrFinish: function(node) {
         if(grid[node.x][node.y].getTileType() == 'Start' || grid[node.x][node.y].getTileType() == 'Finish') {
             return true;
