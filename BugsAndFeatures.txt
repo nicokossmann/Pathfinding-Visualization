@@ -1,0 +1,12 @@
+Buggs:
+
+- Bei Verkleinerung wird Grid nicht angezeigt
+- Dikstra malt jedes einzelne Feld anstatt Kreisen
+
+Features:
+
+- IDA* zum laufen bringen
+- getDistance(): Distanz zwischen Startpunkt
+  und aktuellen Puknt berechnen mit Diagonale
+- DiagonaleCoast Button
+- Bei Dijkstra Heuristic deaktivieren
