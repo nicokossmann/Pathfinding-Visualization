@@ -321,6 +321,7 @@ class Dijkstra extends Pathfindinding {
             this.currentNode.isVisited = true;
             this.visitedNodes.push(this.currentNode);
             Graphics.drawVisitedNodes();
+            
 
             if(this.currentNode == this.finish){
                 var time = this.getTime();
