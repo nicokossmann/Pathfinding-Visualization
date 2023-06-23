@@ -36,6 +36,6 @@ Supplementary visualization of the algorithms to the lecture given in the semina
 2. Build walls by point and click on tiles
 3. Press start button to start the algorithm
 
-![alt text](images\vis.png "Visualization")
+![alt text](https://github.com/nicokossmann/Pathfinding-Visualization/blob/master/images/vis.png "Visualization")
 
 4. Press reset button to reset the visualization
